@@ -1,23 +1,28 @@
 ---
-import "../styles/global.css";
-import { codeToTokens } from "shiki";
-import QueryStepper from "../components/sql-order/QueryStepper";
-import { QUERY_LINES } from "../lib/sql-order/steps";
+import BaseLayout from "../layouts/BaseLayout.astro";
 
-const { tokens } = await codeToTokens(QUERY_LINES.join("\n"), {
-  lang: "sql",
-  theme: "github-dark",
-});
+const posts = [
+  {
+    href: "/posts/sql-order",
+    title: "The order SQL actually runs your query",
+    blurb: "You write SELECT first. The database runs it fifth.",
+  },
+];
 ---
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The order SQL actually runs your query</title>
-  </head>
-  <body class="min-h-screen bg-[#010409] text-gray-200">
-    <main class="mx-auto max-w-5xl p-8">
-      <QueryStepper client:load tokens={tokens} />
-    </main>
-  </body>
-</html>
+<BaseLayout title="YOUR BLOG NAME" description="Interactive explanations of how backend and data tech actually works.">
+  <main class="mx-auto max-w-3xl px-8 py-16">
+    <h1 class="text-3xl font-semibold">YOUR BLOG NAME</h1>
+    <p class="mt-2 text-gray-400">The theory you learned, and how it works in practice.</p>
+
+    <ul class="mt-10 space-y-6">
+      {posts.map((p) => (
+        <li>
+          <a href={p.href} class="group block">
+            <h2 class="text-lg group-hover:text-yellow-400">{p.title}</h2>
+            <p class="text-sm text-gray-500">{p.blurb}</p>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+</BaseLayout>
