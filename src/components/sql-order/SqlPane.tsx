@@ -5,9 +5,10 @@ type Props = {
   activeLine: number;
   comment: string;
   live?: { line: number; match: string; value: string }; // a token to swap live
+  error?: boolean; // show the active line as an error (step 0)
 };
 
-export default function SqlPane({ tokens, activeLine, comment, live }: Props) {
+export default function SqlPane({ tokens, activeLine, comment, live, error }: Props) {
   return (
     <div className="overflow-hidden rounded-lg bg-[#0d1117] font-mono text-sm">
       {/* Editor tab bar */}
@@ -22,13 +23,19 @@ export default function SqlPane({ tokens, activeLine, comment, live }: Props) {
             <div key={i}>
               {/* The explanation appears as a comment above the active line */}
               {active && (
-                <div className="pl-14 pr-4 italic text-emerald-400">{comment}</div>
+                <div className={`pl-14 pr-4 italic ${error ? "text-red-400" : "text-emerald-400"}`}>
+                  {comment}
+                </div>
               )}
 
-              <div className={`flex ${active ? "bg-yellow-400/10" : "opacity-40"}`}>
-                {/* Gutter: debugger arrow + line number */}
-                <span className="w-6 shrink-0 text-center text-yellow-400">
-                  {active ? "▶" : ""}
+              <div
+                className={`flex ${
+                  active ? (error ? "bg-red-500/15" : "bg-yellow-400/10") : "opacity-40"
+                }`}
+              >
+                {/* Gutter: debugger arrow (or error mark) + line number */}
+                <span className={`w-6 shrink-0 text-center ${error ? "text-red-400" : "text-yellow-400"}`}>
+                  {active ? (error ? "✖" : "▶") : ""}
                 </span>
                 <span className="w-6 shrink-0 select-none pr-2 text-right text-gray-600">
                   {i + 1}

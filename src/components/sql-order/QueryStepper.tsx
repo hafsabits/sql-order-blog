@@ -9,12 +9,18 @@ import { runQuery, DEFAULT_PARAMS } from "../../lib/sql-order/engine";
 const LAST = STEPS.length - 1;
 const HAVING_INDEX = STEPS.findIndex((s) => s.id === "having");
 
-export default function QueryStepper({ tokens }: { tokens: ThemedToken[][] }) {
+type Props = {
+  tokens: ThemedToken[][];       // the correct query
+  brokenTokens: ThemedToken[][]; // the step-0 query with the bug
+};
+
+export default function QueryStepper({ tokens, brokenTokens }: Props) {
   const [index, setIndex] = useState(0);
   const [params, setParams] = useState(DEFAULT_PARAMS);
 
   const states = useMemo(() => runQuery(params), [params]);
   const step = STEPS[index];
+  const isIntro = step.id === "intro";
 
   const back = () => setIndex((i) => Math.max(0, i - 1));
   const next = () => setIndex((i) => Math.min(LAST, i + 1));
@@ -34,14 +40,19 @@ export default function QueryStepper({ tokens }: { tokens: ThemedToken[][] }) {
     <div className="flex flex-col gap-6">
       <div className="grid gap-6 md:grid-cols-2">
         <SqlPane
-          tokens={tokens}
+          tokens={isIntro ? brokenTokens : tokens}
           activeLine={step.line}
           comment={step.comment}
-          live={{
-            line: STEPS[HAVING_INDEX].line,
-            match: String(DEFAULT_PARAMS.minTotal),
-            value: String(params.minTotal),
-          }}
+          error={isIntro}
+          live={
+            isIntro
+              ? undefined
+              : {
+                  line: STEPS[HAVING_INDEX].line,
+                  match: String(DEFAULT_PARAMS.minTotal),
+                  value: String(params.minTotal),
+                }
+          }
         />
         <TablePane state={states[step.id]} />
       </div>

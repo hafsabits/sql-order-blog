@@ -2,17 +2,23 @@
 import { codeToTokens } from "shiki";
 import PostLayout from "../../layouts/PostLayout.astro";
 import QueryStepper from "../../components/sql-order/QueryStepper";
-import { QUERY_LINES } from "../../lib/sql-order/steps";
+import { QUERY_LINES, BROKEN_QUERY_LINES } from "../../lib/sql-order/steps";
 
-const { tokens } = await codeToTokens(QUERY_LINES.join("\n"), {
-  lang: "sql",
-  theme: "github-dark",
-});
+async function highlight(lines: readonly string[]) {
+  const { tokens } = await codeToTokens(lines.join("\n"), {
+    lang: "sql",
+    theme: "github-dark",
+  });
+  return tokens;
+}
+
+const tokens = await highlight(QUERY_LINES);
+const brokenTokens = await highlight(BROKEN_QUERY_LINES);
 ---
 <PostLayout
   title="The order SQL actually runs your query"
   description="Step through a SQL query in the order the database evaluates it: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT."
   question="Who were our top 3 customers last month?"
 >
-  <QueryStepper client:load tokens={tokens} />
+  <QueryStepper client:load tokens={tokens} brokenTokens={brokenTokens} />
 </PostLayout>

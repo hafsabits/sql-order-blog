@@ -46,6 +46,7 @@ export function runQuery(p: QueryParams): Record<StepId, TableState> {
     const limited   = sorted.slice(0, p.limit);
 
     return {
+        intro:   { kind: "rows",   rows: fromRows },
         from:    { kind: "rows",   rows: fromRows },
         where:   { kind: "rows",   rows: whereRows },
         groupBy: { kind: "groups", groups },
@@ -53,5 +54,6 @@ export function runQuery(p: QueryParams): Record<StepId, TableState> {
         select:  { kind: "result", rows: selected },
         orderBy: { kind: "result", rows: sorted },
         limit:   { kind: "result", rows: limited },
+        practice: { kind: "result", rows: limited },
     };
 }
